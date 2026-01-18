@@ -5,8 +5,11 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import ApiHealthCheck from "../../components/ApiHealthCheck";
 
-// API Configuration - Use internal Next.js API routes
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+// API Configuration - Use relative URLs for internal API routes
+const getApiUrl = (endpoint) => {
+  // Always use relative URLs for internal API routes
+  return endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+};
 
 export default function Items() {
   const [items, setItems] = useState([]);
@@ -26,7 +29,7 @@ export default function Items() {
       if (category !== 'all') params.append('category', category);
       if (search) params.append('search', search);
 
-      const response = await fetch(`${API_BASE_URL}/api/items?${params}`, {
+      const response = await fetch(getApiUrl(`/api/items?${params}`), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +60,7 @@ export default function Items() {
   // Fetch categories from API
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/categories`, {
+      const response = await fetch(getApiUrl('/api/categories'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

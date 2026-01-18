@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from 'react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+// API Configuration - Use relative URLs for internal API routes
+const getApiUrl = (endpoint) => {
+  // Always use relative URLs for internal API routes
+  return endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+};
 
 export default function ApiHealthCheck() {
   const [status, setStatus] = useState('checking');
@@ -11,7 +15,7 @@ export default function ApiHealthCheck() {
   useEffect(() => {
     const checkApiHealth = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/health`, {
+        const response = await fetch(getApiUrl('/api/health'), {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

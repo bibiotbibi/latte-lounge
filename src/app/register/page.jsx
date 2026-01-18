@@ -5,8 +5,11 @@ import { useState, useEffect, Suspense } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-// API Configuration - Use internal Next.js API routes
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+// API Configuration - Use relative URLs for internal API routes
+const getApiUrl = (endpoint) => {
+  // Always use relative URLs for internal API routes
+  return endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+};
 
 // Component that handles registration
 function RegisterForm() {
@@ -81,7 +84,7 @@ function RegisterForm() {
 
     try {
       // Register user via API
-      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      const response = await fetch(getApiUrl('/api/auth/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -7,8 +7,11 @@ import { useParams, useRouter } from "next/navigation";
 import ApiHealthCheck from "../../../components/ApiHealthCheck";
 import Breadcrumb from "../../../components/Breadcrumb";
 
-// API Configuration - Use internal Next.js API routes
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+// API Configuration - Use relative URLs for internal API routes
+const getApiUrl = (endpoint) => {
+  // Always use relative URLs for internal API routes
+  return endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+};
 
 export default function ItemDetails() {
   const params = useParams();
@@ -87,7 +90,7 @@ export default function ItemDetails() {
     try {
       setLoading(true);
       
-      const response = await fetch(`${API_BASE_URL}/api/items/${id}`, {
+      const response = await fetch(getApiUrl(`/api/items/${id}`), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -120,7 +123,7 @@ export default function ItemDetails() {
   // Fetch related items
   const fetchRelatedItems = async (category) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/items?category=${encodeURIComponent(category)}`, {
+      const response = await fetch(getApiUrl(`/api/items?category=${encodeURIComponent(category)}`), {
         signal: AbortSignal.timeout(5000),
       });
       

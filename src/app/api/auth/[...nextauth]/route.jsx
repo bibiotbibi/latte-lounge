@@ -16,8 +16,13 @@ const providers = [
       }
 
       try {
-        // Use internal API route for authentication
-        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+        // Use relative URL for internal API - works in both dev and production
+        const baseUrl = process.env.NEXTAUTH_URL || (
+          typeof window !== 'undefined' 
+            ? window.location.origin 
+            : 'http://localhost:3000'
+        );
+        
         const response = await fetch(`${baseUrl}/api/auth/login`, {
           method: 'POST',
           headers: {
@@ -44,7 +49,7 @@ const providers = [
         console.warn('API authentication failed, falling back to local users:', error.message);
       }
 
-      // Fallback to local user database if API is unavailable
+      // Fallback to local user database - always works
       const users = [
         {
           id: '1',
@@ -117,15 +122,22 @@ const authOptions = {
   },
   cookies: {
     sessionToken: {
-      name: 'next-auth.session-token',
+      name: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token' 
+        : 'next-auth.session-token',
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production'
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' 
+          ? process.env.NEXTAUTH_URL?.replace(/https?:\/\//, '').split('/')[0]
+          : undefined
       }
     }
-  }
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === 'development'
 }
 
 const handler = NextAuth(authOptions)

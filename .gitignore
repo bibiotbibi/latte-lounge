@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Additional files to ignore
+/server/
+test-*.js
+test-*.ps1
+*-backup.js
+*-new.js
